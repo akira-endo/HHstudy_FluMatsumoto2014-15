@@ -28,7 +28,7 @@ Household members are categorised into:
 
 For further details of data collection procedures, see Uchida et al., 2016 (doi: 10.1016/j.pmedr.2016.12.002).
 
-# Dependencies
+## Dependencies
 * R ver. 3.4.1
 * {Rcpp} ver. 1.0.0
 * {RcppArmadillo} ver. 0.8.300.1.0
