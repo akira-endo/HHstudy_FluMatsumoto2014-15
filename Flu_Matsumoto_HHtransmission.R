@@ -1,8 +1,6 @@
 library(Rcpp)
 library(RcppArmadillo)
 library(LaplacesDemon)
-library(Matrix)
-library(foreach)
 
 # data import
 HHdata<-as.matrix(read.csv("HHdata_FluMatsumoto2014-15.csv"))
@@ -95,10 +93,10 @@ cppFunction(depends='RcppArmadillo',includes=code_cppLK[1],code=code_cppLK[2])
 ## MCMC function
 runMCMC<-function(model,HHdataset=list(HHdata,HHdata_SP),WBIC=F){
   ntype<-5+model$single_parent*1
-  parlist=list(risk_community=rep(0.3,(ntype)^as.numeric(model$het_rcom)),Rh=rep(0.5,ntype^as.numeric(model$prop)))
+  parlist=list(risk_community=rep(0.3,(ntype)^as.numeric(model$het_rcom)),hh_transmission=rep(0.5,ntype^as.numeric(model$prop)))
   logical_powfree<-!(model$pow==0||model$pow==1)
   HHdata_MCMC=HHdataset[[1]]
-  if(logical_powfree)parlist$nfactor=0.5 else nfactor=as.numeric(model$pow)
+  if(logical_powfree)parlist$gamma=0.5 else gamma=as.numeric(model$pow)
   Data=list(N=sum(HHdata_MCMC[,11]),mon.names=c("nlogl","beta"),parm.names=as.parm.names(parlist),pos=as.list(sapply(names(parlist),function(x)grep(x,as.parm.names(parlist)),simplify = F)))
   inf_index<-c("Father.inf","Mother.inf","Other.inf","Sibling.inf")
   fam_index<-c("Father.num","Mother.num","nonsiblings.num","siblings.num")
@@ -109,11 +107,11 @@ runMCMC<-function(model,HHdataset=list(HHdata,HHdata_SP),WBIC=F){
   }
   Model<-function(parm,Data){
     # parameters
-    nf<-ifelse(logical_powfree,parm[Data$pos$nfactor],nfactor)
+    gm<-ifelse(logical_powfree,parm[Data$pos$gamma],gamma)
     rcom<-interval(parm[Data$pos$risk_community],0)
-    Rh<-interval(parm[Data$pos$Rh],0)
+    c_HH<-interval(parm[Data$pos$HH_transmission],0)
   
-    vbeta<-rep(0,ntype)+Rh
+    vbeta<-rep(0,ntype)+c_HH
     vrcom<-rep(0,ntype)+rcom
     
     # Construct contact intensity matrix c_kl
@@ -138,7 +136,7 @@ runMCMC<-function(model,HHdataset=list(HHdata,HHdata_SP),WBIC=F){
     # cmat[2:3,2:3]=vbeta[2]
     # cmat[5,5]=vbeta[4]
     
-    beta<-mean(cmat%*%rep(1,ntype))^nf*cmat[2,3]^(1-nf) # compute beta
+    beta<-mean(cmat%*%rep(1,ntype))^gm*cmat[2,3]^(1-gm) # compute beta
     
     # ascertainment bias
     ascertain<- -1 # ascertainment bias not considered when ascertain = -1
@@ -147,9 +145,9 @@ runMCMC<-function(model,HHdataset=list(HHdata,HHdata_SP),WBIC=F){
       ascertain[c(1,5)]=0.8
     }
     
-    ll<-logLK_HH(numeric(ntype)+1,cmat,vrcom,HHdata_MCMC,nf,ascertain)
+    ll<-logLK_HH(numeric(ntype)+1,cmat,vrcom,HHdata_MCMC,gm,ascertain)
     
-    parm=interval(parm,0);parm[Data$pos$nfactor]=nf[1]
+    parm=interval(parm,0);parm[Data$pos$gamma]=gm[1]
     return(list(LP=ll/log(Data$N)^WBIC,Dev=-2*ll,Monitor=c(ll,beta),yhat=NULL,parm=parm))
   }
   fit<-LaplacesDemon(Model=Model,Data=Data,Initial.Values=unlist(parlist),Covar=NULL,Iterations=10000,Status=10,Thinning=10,Algorithm='HARM',Specs=NULL)
