@@ -1,5 +1,5 @@
 # HHstudy_FluMatsumoto2014-15
-Household study of influenza in primary schools in Matsumoto city, Japan, 2014-15.
+Household study of influenza in primary schools in Matsumoto city, Japan, 2014-15. Details of the study including model specifications and inference procedures are available on bioRxiv (https://www.biorxiv.org/content/10.1101/527507v1).
 
 ## Files
 * Flu_Matsumoto_HHtransmission.R
