@@ -90,6 +90,13 @@ code_cppLK=c('
   }')
 cppFunction(depends='RcppArmadillo',includes=code_cppLK[1],code=code_cppLK[2])
 
+## Code testing
+source("codetest.r")
+maxfam=c(1,4,1,1,3) # Upper limit for each category
+HHcomp_ptn=expand.grid(0:maxfam[1],0:maxfam[2],0:maxfam[3],0:maxfam[4],0:maxfam[5])[-1,] # all possible HH compositions within upper limit
+test_sum1(runif(5),matrix(runif(25),5),runif(5),HHcomp_ptn,runif(1),-1) # Checks if the sum of all possible infection patterns in a specified HH composition is 1
+test_nocase(runif(5),matrix(runif(25),5),runif(5),HHcomp_ptn,runif(1),-1) # Checks if the loglikelihood of a household with no infection matches the mathematical derivation
+
 ## MCMC function
 runMCMC<-function(model,HHdataset=list(HHdata,HHdata_SP),WBIC=F){
   ntype<-5+model$single_parent*1
