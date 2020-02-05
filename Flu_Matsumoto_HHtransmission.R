@@ -9,7 +9,7 @@ HHdata[,1:5]=pmax(HHdata[,1:5],HHdata[,6:10]) # If HH member < infected member, 
 
 # data with the "single parent" category
 index_SP=HHdata[,"Father.num"]+HHdata[,"Mother.num"]==1
-HHdata_SP=cbind(HHdata[,1:5],SP.num=0,HHdata[,6:10],SP.inf=0)
+HHdata_SP=cbind(HHdata[,1:5],SP.num=0,HHdata[,6:10],SP.inf=0,HHdata[,11])
 HHdata_SP[index_SP,c("SP.num","SP.inf")]=HHdata_SP[index_SP,c("Father.num","Father.inf")]+HHdata_SP[index_SP,c("Mother.num","Mother.inf")]
 HHdata_SP[index_SP,c("Father.num","Father.inf","Mother.num","Mother.inf")]=0
 
@@ -100,7 +100,7 @@ test_nocase(runif(5),matrix(runif(25),5),runif(5),HHcomp_ptn,runif(1),-1) # Chec
 ## MCMC function
 runMCMC<-function(model,HHdataset=list(HHdata,HHdata_SP),WBIC=F){
   ntype<-5+model$single_parent*1
-  parlist=list(risk_community=rep(0.3,(ntype)^as.numeric(model$het_rcom)),hh_transmission=rep(0.5,ntype^as.numeric(model$prop)))
+  parlist=list(risk_community=rep(0.3,(ntype)^as.numeric(model$het_rcom)),HH_transmission=rep(0.5,ntype^as.numeric(model$prop)))
   logical_powfree<-!(model$pow==0||model$pow==1)
   HHdata_MCMC=HHdataset[[1]]
   if(logical_powfree)parlist$gamma=0.5 else gamma=as.numeric(model$pow)
@@ -108,8 +108,8 @@ runMCMC<-function(model,HHdataset=list(HHdata,HHdata_SP),WBIC=F){
   inf_index<-c("Father.inf","Mother.inf","Other.inf","Sibling.inf")
   fam_index<-c("Father.num","Mother.num","nonsiblings.num","siblings.num")
   if(model$single_parent){
-    inf_index=c("SParent.inf",inf_index)
-    fam_index=c("SParent.fam",fam_index)
+    inf_index=c(inf_index,"SParent.inf")
+    fam_index=c(fam_index,"SParent.fam")
     HHdata_MCMC=HHdataset[[2]]
   }
   Model<-function(parm,Data){
