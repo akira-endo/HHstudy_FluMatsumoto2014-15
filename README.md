@@ -1,5 +1,5 @@
 # HHstudy_FluMatsumoto2014-15
-Household study of influenza in primary schools in Matsumoto city, Japan, 2014-15. Details of the study including model specifications and inference procedures are available on bioRxiv (https://www.biorxiv.org/content/10.1101/527507v1).
+Replication code and data accompanying: Endo et al. "Fine-scale family structure shapes influenza transmission risk in households: Insights from primary schools in Matsumoto city, 2014/15" [https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1007589](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1007589)
 
 ## Files
 * Flu_Matsumoto_HHtransmission.R
@@ -40,4 +40,4 @@ For further details of data collection procedures, see Uchida et al., 2016 (doi:
 
 ## Author
 
-[Akira Endo](https://github.com/akira-endo)
+[Akira Endo](https://github.com/akira-endo), Mitsuo Uchida, Adam Kucharski, Sebastian Funk
